@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Three-agent frozen Type-B shadow runner. Default: PHONE PRE-FLIGHT ONLY.
+"""Three-agent frozen Type-B shadow runner (AutoGLM, Mobile-Agent-E, MAI-UI). Default: PHONE PRE-FLIGHT ONLY.
 
 Uses independently validated original adapter sources, not new GUI logic.
 Only --execute may call models or touch the phone; underlying adapter additionally
@@ -12,7 +12,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parent
 AGENTS={
  'autoglm':('run_autoglm.py','autoglm_v3_shadow'),
- 'appagent':('run_appagent.py','appagent_typeb_shadow'),
+ 'mobile-agent-e':('run_mobile_agent_e.py','mobile_agent_e_typeb_shadow'),
  'mai-ui':('run_mai_ui.py','mai_ui_8b_typeb_shadow')
 }
 
@@ -30,10 +30,10 @@ def command(a, execute=False):
  if a.agent=='autoglm':
   cmd+=['--remote-binary',a.remote_binary]
   if a.autoglm_repo:cmd+=['--autoglm',str(a.autoglm_repo)]
- elif a.agent=='appagent':
-  cmd+=['--original-runner',str(ROOT/'adapters'/'run_autoglm.py'),
-        '--appagent-repo',str(a.appagent_repo),'--max-actions',str(a.max_actions),
-        '--ui-mode',a.ui_mode]
+ elif a.agent=='mobile-agent-e':
+  cmd+=['--existing-typeb-runner',str(ROOT/'adapters'/'run_autoglm.py')]
+  if a.mobile_agent_e_repo:cmd+=['--mobile-agent-e',str(a.mobile_agent_e_repo)]
+  if a.model:raise ValueError('Mobile-Agent-E official backend uses BACKBONE_TYPE environment; --model is not a native Mobile-Agent-E argument')
  else:
   cmd+=['--original-adapter',str(ROOT/'adapters'/'run_autoglm.py'),
         '--mai-repo',str(a.mai_repo),'--remote-binary',a.remote_binary,
@@ -56,11 +56,10 @@ def cli(argv=None):
  p.add_argument('--max-actions',type=int,default=25)
  p.add_argument('--model',default='')
  p.add_argument('--autoglm-repo',type=Path)
- p.add_argument('--appagent-repo',type=Path,default=Path.home()/'Desktop'/'AppAgent')
+ p.add_argument('--mobile-agent-e-repo',type=Path,default=None,help='Official X-PLUG/MobileAgent/Mobile-Agent-E checkout; otherwise adapter searches established locations')
  p.add_argument('--mai-repo',type=Path,default=Path.home()/'Desktop'/'MAI-UI')
  p.add_argument('--mai-api-base',default='')
  p.add_argument('--remote-binary',default='/data/local/tmp/uinput_typeb_agent_compat')
- p.add_argument('--ui-mode',choices=('auto','element','grid'),default='auto')
  p.add_argument('--execute',action='store_true',help='MAY call API and move phone; require adapter interactive approval')
  p.add_argument('--score-after',action='store_true',help='Run exact P74 and V3 prefix replay on captured log; requires cluster')
  p.add_argument('--self-test',action='store_true',help='No phone/API/model')
@@ -68,10 +67,15 @@ def cli(argv=None):
  if a.self_test:
   for agent in AGENTS:
    a.agent=agent;a.project=Path('/tmp/dummy');a.expected_package='com.example.app'
-   assert '--preflight-only' in command(a)
-   assert '--task' not in command(a)
-   a.task='Browse a page';assert '--task' in command(a,execute=True)
-  print('GENERALIZATION RUNNER SELF-TEST PASS (3 agent adapter contracts, offline)')
+   a.model=''
+   pre=command(a)
+   assert '--preflight-only' in pre and '--task' not in pre
+   assert ('--existing-typeb-runner' in pre) == (agent=='mobile-agent-e')
+   assert ('--original-adapter' in pre) == (agent=='mai-ui')
+   a.task='Browse a page'
+   real=command(a,execute=True)
+   assert '--task' in real and '--preflight-only' not in real
+  print('GENERALIZATION RUNNER SELF-TEST PASS (AutoGLM, Mobile-Agent-E, MAI-UI; offline)')
   return 0
  if a.score_after and (not a.execute or a.task_cluster is None):
   p.error('--score-after needs --execute and PREDECLARED --task-cluster 0..4')
