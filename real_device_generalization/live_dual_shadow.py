@@ -296,17 +296,87 @@ def wrap(original_shadow, project, outdir):
 
 
 def self_test():
-    class FakeOriginal:
-        def __init__(self):
-            self.last_n=0
-            self.eventsfile=Path("/dev/null")
+    # End-to-end mocked integration without P74 imports, Android or API.
+    # This deliberately covers the AutoGLM/Mobile-Agent-E order: stop() then final().
     assert evidence_check("verified-source-task-map: fixed-before-testing")!= ""
-    try:evidence_check("guess")
-    except ValueError:pass
-    else:raise AssertionError("Guessed cluster must not be accepted")
-    a=stats([10,20,30,40])
-    assert a["n"]==4 and a["p95_ms"]==40
-    print("LIVE DUAL SHADOW OFFLINE CONTRACT PASS: 2 detectors, author mapping and metrics")
+    for invalid in ("guess","default","qqmusic","0",""):
+        try:evidence_check(invalid)
+        except ValueError:pass
+        else:raise AssertionError("Unsupported cluster provenance accepted")
+    assert stats([10,20,30,40])["p95_ms"]==40
+
+    import tempfile as _tempfile
+    class FakeAuthor:
+        close_called=False
+        def __init__(self, project,cluster,evidence):
+            self.cluster=cluster
+            self.evidence=evidence
+            self.asset_sha256={"mock":"mock"}
+        def score(self,blob,physical_g,check_history=True):
+            if self.close_called:raise RuntimeError("Author model closed before final")
+            return {"status":"ok","score":float(physical_g)-1.5,
+                    "detected":physical_g>=2,"n_actions":physical_g,
+                    "latency_ms":0.2,"error":None}
+        def close(self):
+            self.close_called=True
+
+    class FakeV3:
+        def __init__(self, folder):
+            self.outdir=folder
+            self.last_n=0
+            self.last_blob=b""
+            self.gestures=[]
+            self.eventsfile=folder/"v3_prefix_results.jsonl"
+            self.error=None
+            self.stopped=False
+        def start(self):pass
+        def stop(self):
+            self.stopped=True
+        def score_new(self, expected_delta,action_type):
+            assert expected_delta==1
+            g=self.last_n+1
+            self.last_blob=b"Z"*g
+            self.gestures=list(range(1,g+1))
+            self.last_n=g
+            if g<5:return [{"hardware_g":g,"state":"OBSERVE","action_type":action_type}]
+            return [{"hardware_g":g,"state":"EAD_SHADOW","action_type":action_type,
+                     "v3_status":"ok","v3_n_actions":g,
+                     "score":.92,"detected":True,"latency_ms":2.5}]
+        def final(self):
+            return {"v3_status":"ok","final_score":.92,"final_detected":True,
+                    "v3_n_actions":self.last_n,"alignment_pass":True,
+                    "latency_ms":1.0}
+    original=globals()["NativeP74"]
+    try:
+        globals()["NativeP74"]=FakeAuthor
+        with _tempfile.TemporaryDirectory(prefix="csg_dual_test_") as d:
+            folder=Path(d)
+            native=FakeV3(folder)
+            shadow=DualShadow(native,folder,folder,2,
+                              "verified-source-task-map: fixed-before-testing","mock_session")
+            shadow.start()
+            for g in range(1,7):
+                native_rows=shadow.score_new(1,"Tap")
+                assert len(native_rows)==1
+                assert shadow.rows[-1]["physical_g"]==g
+                assert shadow.rows[-1]["source_prefix_sha256"]==sha256_bytes(b"Z"*g)
+            shadow.stop()
+            assert native.stopped
+            assert not shadow._closed
+            result=shadow.final()
+            assert result["final_detected"] is True
+            assert shadow._closed
+            m=json.loads((folder/"paired_online_metrics.json").read_text())
+            assert m["completed_typeb_contacts"]==6
+            assert m["metrics"]["author"]["first_online_alarm_g"]==2
+            assert m["metrics"]["v3"]["first_online_alarm_g"]==5
+            assert m["metrics"]["author"]["online_evaluable_prefix_count"]==6
+            assert m["metrics"]["v3"]["online_evaluable_prefix_count"]==2
+            assert m["metrics"]["author"]["online_last_equals_final"] is True
+            assert len((folder/"dual_online_prefixes.jsonl").read_text().splitlines())==6
+    finally:
+        globals()["NativeP74"]=original
+    print("LIVE DUAL SHADOW MOCK INTEGRATION PASS: one source, native EAD g5, author, stop-then-final, latency")
 
 
 if __name__=="__main__":
