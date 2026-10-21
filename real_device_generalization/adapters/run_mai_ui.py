@@ -37,6 +37,18 @@ APP_PACKAGE='com.tencent.qqmusic'
 ORIGINAL_ADAPTER=Path.home()/'Downloads'/'RUN_AUTOGLM_V3_TYPEB_SHADOW_QQMUSIC.py'
 
 
+
+def _attach_live_p74_to_original_v3_shadow(shadow, project, outdir):
+    """Only instrumentation on validated native Shadow; never changes GUI actions."""
+    if os.environ.get("CSG_DUAL_ONLINE") != "1":
+        return shadow
+    shared=Path(__file__).resolve().parents[1]
+    if str(shared) not in sys.path:
+        sys.path.insert(0,str(shared))
+    from live_dual_shadow import wrap
+    return wrap(shadow,project,outdir)
+
+
 def jdump(path:Path, obj:Any):
     path.write_text(json.dumps(obj,ensure_ascii=False,indent=2,default=str)+'\n',encoding='utf-8')
 
@@ -324,7 +336,7 @@ def cli():
         v3=None;params=None
         if not a.model_probe_only:
             v3,params=original.load_v3(a.project)
-            sh=original.Shadow(a.project,adb,a.remote_binary,outdir/'raw_getevent.txt',outdir,v3,params,a.dwell_ms,a.swipe_ms)
+            sh=_attach_live_p74_to_original_v3_shadow(original.Shadow(a.project,adb,a.remote_binary,outdir/'raw_getevent.txt',outdir,v3,params,a.dwell_ms,a.swipe_ms),a.project,outdir)
             sh.start()
         for step in range(1,2 if a.model_probe_only else a.max_steps+1):
             if not a.model_probe_only and actions>=a.max_actions:
