@@ -70,11 +70,11 @@ If the Mobile-Agent-E location differs, pass its actual path (or omit the flag t
 
 ## Single-run **live** dual-defense experiment (not executed yet)
 
-The prior AutoGLM/Mobile-Agent-E/MAI-UI → validated Type-B executor → kernel getevent chain remains unchanged. **Once** each genuine Type-B tap/swipe ends, the original Shadow scores native Frozen P10 V3 (eligible online only from g≥5) and the added [\`live_dual_shadow.py\`](live_dual_shadow.py) evaluates the **same raw touch prefix** with frozen reconstructed P74 Author Ultimate. The Agent does not repeat the task; both detectors are observation-only. The original Agent still makes all GUI decisions and the original native V3 result is returned without modification.
+The prior AutoGLM/Mobile-Agent-E/MAI-UI → validated Type-B executor → kernel getevent chain remains unchanged. **Once** each genuine Type-B tap/swipe ends, the original Shadow scores native Frozen P10 V3 (eligible online only from g≥5) and the added [`live_dual_shadow.py`](live_dual_shadow.py) evaluates the **same raw touch prefix** with frozen reconstructed P74 Author Ultimate. The Agent does not repeat the task; both detectors are observation-only. The original Agent still makes all GUI decisions and the original native V3 result is returned without modification.
 
 **No new experiments are being run as part of this code release.** An eventual Mobile-Agent-E example with a task cluster independently established **before execution**:
 
-\`\`\`bash
+```bash
 ROOT="$HOME/Desktop/MobileAgentDefense-generalization"
 PROJECT="$HOME/Desktop/GUI_AHB_PAPER_REBUILD"
 RUNNER="$ROOT/real_device_generalization/runner.py"
@@ -92,45 +92,45 @@ python "$RUNNER" \
   --cluster-evidence "SOURCE_RECORD: verified before experiment" \
   --max-steps 12 \
   --execute
-\`\`\`
+```
 
-The command is an **example only**, not a request to run the phone now. If no independently substantiated original AHB cluster exists (especially for a new unseen application), use explicit \`--v3-only\` instead of asserting a misleading P74 comparison. No Human FPR can be inferred from the three GUI-agent traces alone.
+The command is an **example only**, not a request to run the phone now. If no independently substantiated original AHB cluster exists (especially for a new unseen application), use explicit `--v3-only` instead of asserting a misleading P74 comparison. No Human FPR can be inferred from the three GUI-agent traces alone.
 
-Mobile-Agent-E's native \`--max-steps\` limits planner iterations; \`--max-actions\` is **not** a separate Mobile-Agent-E hardware gesture limit. Its official API environment supplies \`BACKBONE_TYPE\`, \`QWEN_API_KEY\` and the selected backbone provider key; never pass an artificial \`--model\` argument to this original Mobile-Agent-E interface.
+Mobile-Agent-E's native `--max-steps` limits planner iterations; `--max-actions` is **not** a separate Mobile-Agent-E hardware gesture limit. Its official API environment supplies `BACKBONE_TYPE`, `QWEN_API_KEY` and the selected backbone provider key; never pass an artificial `--model` argument to this original Mobile-Agent-E interface.
 
 ### What each live run records
 
-The existing adapter still creates its native directory under \`PROJECT/real_device_online/\`:
-- \`autoglm_v3_shadow/<run-id>/\`
-- \`mobile_agent_e_typeb_shadow/<run-id>/\`
-- \`mai_ui_8b_typeb_shadow/<run-id>/\`
+The existing adapter still creates its native directory under `PROJECT/real_device_online/`:
+- `autoglm_v3_shadow/<run-id>/`
+- `mobile_agent_e_typeb_shadow/<run-id>/`
+- `mai_ui_8b_typeb_shadow/<run-id>/`
 
 Each eligible live-dual session now also contains:
 
 | Local file | Purpose |
 | --- | --- |
-| \`virtual_events_normalized.log\` | Independently captured real Type-B virtual touchscreen events |
-| \`v3_prefix_results.jsonl\` | **Untouched** original P10 V3 EAD g≥5 prefix results |
-| \`dual_online_prefixes.jsonl\` | One row per completed physical touch: P74 and V3 eligibility, native scores, decisions, independent parser coverage, processing latency, observation timestamp, and SHA256 of identical physical prefix |
-| \`paired_online_metrics.json\` | First live alarm gesture/UTC, anytime detection, native retrospective session-final decision, P74 final-prefix parity, valid-prefix coverage, detector scoring mean/median/p95 ms, frozen artifact SHA256 and any parser failures |
-| \`generalization_manifest.json\` | Agent, task ID, exact foreground app, source adapter hash, task-cluster provenance, ground truth actor, run status |
-| \`summary.json\` | Original agent's task-completion/self-report and V3 native summary (not rewritten by dual sidecar) |
+| `virtual_events_normalized.log` | Independently captured real Type-B virtual touchscreen events |
+| `v3_prefix_results.jsonl` | **Untouched** original P10 V3 EAD g≥5 prefix results |
+| `dual_online_prefixes.jsonl` | One row per completed physical touch: P74 and V3 eligibility, native scores, decisions, independent parser coverage, processing latency, observation timestamp, and SHA256 of identical physical prefix |
+| `paired_online_metrics.json` | First live alarm gesture/UTC, anytime detection, native retrospective session-final decision, P74 final-prefix parity, valid-prefix coverage, detector scoring mean/median/p95 ms, frozen artifact SHA256 and any parser failures |
+| `generalization_manifest.json` | Agent, task ID, exact foreground app, source adapter hash, task-cluster provenance, ground truth actor, run status |
+| `summary.json` | Original agent's task-completion/self-report and V3 native summary (not rewritten by dual sidecar) |
 
 **Online vs final is intentionally separate.** P10 V3's first live alarm uses g≥5 as originally implemented; P74's original cumulative evidence uses recognized finished gestures, with every interval update excluded from the gesture clock. A session with fewer than five gestures can have a retrospective V3 final classification but **cannot** be credited with an earlier g≥5 live alert. Scoring is synchronous after each action and therefore adds measured overhead before the next agent decision; it is not a real-time zero-overhead blocking defense.
 
 ### Optional second read-only parity replay (not required for paired live scoring)
 
-If one wants independent consistency checks after the run, add \`--audit-replay-after\` to the eventual live command. It replays the SAME saved trace offline using [\`dual_replay.py\`](dual_replay.py), saves \`independent_dual_audit_replay.json\`, and performs **no additional phone actions**. This is a verification step; the paired online scores are already saved during the single Agent run.
+If one wants independent consistency checks after the run, add `--audit-replay-after` to the eventual live command. It replays the SAME saved trace offline using [`dual_replay.py`](dual_replay.py), saves `independent_dual_audit_replay.json`, and performs **no additional phone actions**. This is a verification step; the paired online scores are already saved during the single Agent run.
 
 ### Aggregate metrics without inventing Human FPR
 
 After multiple recorded sessions, this script produces total and **Agent × App** tables, including native final accuracy/recall (where identifiable), anytime recall, first-alarm gesture index, g5/g11 rates for all-session and reached-g denominators, coverage, per-detector timing, and manually reported task completion:
 
-\`\`\`bash
+```bash
 python "$ROOT/real_device_generalization/summarize_generalization.py" \
   --runs-root "$PROJECT/real_device_online" \
   --out "$PROJECT/real_device_online/generalization_metrics.json"
-\`\`\`
+```
 
 **Human FPR, balanced accuracy and accuracy remain null (not zero)** until separately collected and correctly labeled Human sessions are included. Report per-detector valid final denominators and paired subset denominators separately. A model self-declared completion is not an independently judged task success. Do not claim an agent-only experimental run measures user burden, override behavior or Human FPR.
 
