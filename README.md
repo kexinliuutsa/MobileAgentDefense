@@ -12,6 +12,34 @@ Original upstream: https://github.com/Gebro13/Passing-the-Turing-Test-on-Screen-
 - **Compatible Tap/Interval posterior:** existing P31 loader adapts original fitted confusion count objects with 0.5 pseudocount smoothing. This is a compatibility intervention, not an untouched official binary release.
 - **Decision:** original `UltimateClassifier.predict()` cumulative score, equal prior `prior_log_odds=0`, binary Agent when score > 0. **This is our declared reproduction cutoff, not a documented author-published deployment threshold.** No evaluation FPR matching or retuning.
 
+## Exact external asset pointers (no binaries committed)
+
+Machine-readable paths, roles, and SHA256 checksums for the **five external P74 inputs** are in [`author_ultimate/external_asset_pointers.json`](author_ultimate/external_asset_pointers.json). Resolve these paths **relative to your local `GUI_AHB_PAPER_REBUILD` project root**, not relative to the GitHub checkout:
+
+| Dependency | Project-relative path | SHA256 (first 12 chars) |
+| --- | --- | --- |
+| Author `judge_library.py` (validated local snapshot) | `00_original/author_repo/analysis/processing/judge_library.py` | `6433b9261d1b` |
+| Released Swipe classifiers | `00_original/author_repo/humanized_swipe_classifiers.pkl` | `47b9517c8f11` |
+| Released Tap classifiers | `00_original/author_repo/raw_tap_classifier_us_across_clusters.pkl` | `ebf2d307fb9f` |
+| Released Interval classifiers | `00_original/author_repo/interval_classifier_microseconds_across_clusters.pkl` | `4af23a501f81` |
+| P73 reconstructed outer Scaler | `06_paper_tables/P68_ORIGINAL_CLUSTER_NATIVE_SESSION_TABLE/P73_AUTHOR_NATIVE_RECOVERY/candidate_outer_scalers_all_clusters.joblib` | `855f33bdac5c` |
+
+The original [`judge_library.py` upstream path](https://github.com/Gebro13/Passing-the-Turing-Test-on-Screen-Agent-Humanization-Benchmark/blob/main/analysis/processing/judge_library.py) is linked for provenance; **the exact locally audited P74 source snapshot has the SHA256 above**, which need not equal a different upstream version or checkout. Do not download a newly changed source version and silently treat it as equivalent. The author's `.pkl` models and our P73 Scaler remain external local inputs; this manifest is **not a download URL or a copy of the assets**.
+
+Verify before loading Python Pickle/Joblib (only load models from trusted sources):
+
+```bash
+cd ~/Desktop/GUI_AHB_PAPER_REBUILD
+shasum -a 256 \
+  00_original/author_repo/analysis/processing/judge_library.py \
+  00_original/author_repo/humanized_swipe_classifiers.pkl \
+  00_original/author_repo/raw_tap_classifier_us_across_clusters.pkl \
+  00_original/author_repo/interval_classifier_microseconds_across_clusters.pkl \
+  06_paper_tables/P68_ORIGINAL_CLUSTER_NATIVE_SESSION_TABLE/P73_AUTHOR_NATIVE_RECOVERY/candidate_outer_scalers_all_clusters.joblib
+```
+
+To reproduce the baseline, also retain `scripts/P31_hex_online.py` (Tap/Interval compatibility loader) and `scripts/P31_hex_frame_adapter.py` from the audited Paper Rebuild workspace. No author-model file, original data, or reconstructed serialized Scaler is being redistributed here.
+
 ## Audited historical numbers
 
 On 1,752 valid paired sessions (1,310 Agent / 442 Human), the P74 row-level predictions yield:
