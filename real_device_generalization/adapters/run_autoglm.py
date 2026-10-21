@@ -39,6 +39,18 @@ SYN = re.compile(rb'\bSYN_REPORT\b')
 TYPEB_REMOTE = '/data/local/tmp/uinput_typeb_agent_compat'
 TYPEB_LOCAL_REL = Path('real_device_online/uinput_typeb_agent_compat/uinput_typeb_agent_compat')
 
+
+def _attach_live_p74_to_original_v3_shadow(shadow, project, outdir):
+    """Only instrumentation on validated native Shadow; never changes GUI actions."""
+    if os.environ.get("CSG_DUAL_ONLINE") != "1":
+        return shadow
+    shared=Path(__file__).resolve().parents[1]
+    if str(shared) not in sys.path:
+        sys.path.insert(0,str(shared))
+    from live_dual_shadow import wrap
+    return wrap(shadow,project,outdir)
+
+
 def verify_typeb_preflight(project, adb, remote, expected_package=None, verify_hash=True):
     """Read-only checks. No screen taps, no model API, no V3 inference."""
     if remote != TYPEB_REMOTE:
@@ -310,7 +322,7 @@ def main():
     if input('Type YES to authorize executing this task on your PHONE: ').strip()!='YES':
         print('CANCELLED. No Agent actions sent.');return 0
     outdir.mkdir(parents=True,exist_ok=False)
-    watcher=Shadow(project,adb,a.remote_binary,outdir/'getevent_all_devices.log',outdir,v3,params,a.dwell_ms,a.swipe_ms)
+    watcher=_attach_live_p74_to_original_v3_shadow(Shadow(project,adb,a.remote_binary,outdir/'getevent_all_devices.log',outdir,v3,params,a.dwell_ms,a.swipe_ms),project,outdir)
     original=agent.action_handler.execute
     user_cancelled=False
     stop_reason='max_steps'
