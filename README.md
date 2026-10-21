@@ -9,7 +9,34 @@ This release branch contains two distinct research defenses side-by-side:
 
 **Publication status:** This is an auditable source-and-artifact release, not an independently validated standalone real-device dual-defense runtime. The two detectors do not share weights or decision thresholds. The Author uses its original task cluster; CrossScaleGuard full fusion does not.
 
-**Git status:** The source restoration is on the publication-review branch; the empty `main` remains unchanged until the draft pull request is reviewed and merged.
+**Release status:** The original P10 runtime source, its original feature extraction source, and frozen model weights are bundled under their canonical Paper Rebuild paths. The GitHub Action validates frozen SHA256 hashes and executes a synthetic full-model inference smoke test. This does not replace a prospective real-device evaluation.
+
+---
+
+## Run our frozen P10 Full Fusion (from a fresh clone)
+
+For our CrossScaleGuard baseline **no external source repo or separate model download is needed**. It uses our released weights and original feature extractors under `01_clean_code/offline_defenses/`. Python 3.11 with pinned package versions is recommended.
+
+```bash
+git clone https://github.com/kexinliuutsa/MobileAgentDefense.git
+cd MobileAgentDefense
+
+python3.11 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements-frozen-v3.txt
+
+# Read-only source/model hash audit + synthetic end-to-end scoring
+python our_defense/verify_frozen_release.py --smoke
+
+# Offline/shadow scoring on an independently collected Android getevent log
+python 01_clean_code/offline_defenses/crossscaleguard_offline_v3/run.py \
+  --mode predict \
+  --log /path/to/virtual_events_normalized.log
+```
+
+Frozen threshold: **0.8711460070813885**. The historical `run.py` and the frozen Session/Strict native feature extraction sources were restored byte-for-byte by SHA256. The [Frozen V3 README](our_defense/README.md) explains provenance and why the older V1 OR V2 OR V3 implementation must not be confused with P10 Full Fusion. The [GitHub Actions workflow](.github/workflows/frozen-p10-audit.yml) independently checks the published files on Linux.
+
+The Author Ultimate P74 baseline is different: its released upstream model binaries and the P73 reconstructed Scaler remain **external**, documented in [asset pointers](author_ultimate/external_asset_pointers.json). The historical P74 replay scripts also rely on original Paper Rebuild P20/P31 modules. **The Author baseline is not a standalone online deployment here.**
 
 ---
 
