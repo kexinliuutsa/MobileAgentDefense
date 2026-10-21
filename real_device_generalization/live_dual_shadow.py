@@ -156,12 +156,9 @@ class DualShadow:
         return self.original.start()
 
     def stop(self):
-        try:
-            return self.original.stop()
-        finally:
-            if not self._closed:
-                self.author.close()
-                self._closed=True
+        # AutoGLM and Mobile-Agent-E call stop() BEFORE final().
+        # Do not close native Author resources until retrospective final scoring.
+        return self.original.stop()
 
     def score_new(self, expected_delta, action_type):
         """Always score actual kernel closure, never a planned action."""
@@ -279,6 +276,9 @@ class DualShadow:
         path.write_text(json.dumps(out,ensure_ascii=False,indent=2,
                                    allow_nan=False,default=str)+"\n",encoding="utf-8")
         self._final=native  # original adapter expects original V3 final()
+        if not self._closed:
+            self.author.close()
+            self._closed=True
         return native
 
 
