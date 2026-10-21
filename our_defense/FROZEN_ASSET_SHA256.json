@@ -1,0 +1,39 @@
+{
+  "release": "P10_CROSSSCALEGUARD_FROZEN_V3_FULL_FUSION",
+  "provenance": {
+    "source_repo": "kexinliuutsa/MobileAgentDefense",
+    "source_git_commit": "a6c4de2a01b620ef5f2c4d616c23e4c1ed44dae1",
+    "source_prefix": "MobileAgentDefense 2/our_defense",
+    "method": "Reused immutable blobs in same Git repository; no model modification",
+    "verified_runtime_parity": false
+  },
+  "selected_thresholds": {
+    "full fusion": 0.8711460070813885,
+    "session only": 0.62530381448316,
+    "strict only": 0.9604715550337823,
+    "human-reference only": 0.9914893617021278,
+    "fake only": 0.9967294530133348,
+    "session + strict": 0.9589446734700173
+  },
+  "files_sha256": {
+    "offline_v3_source/artifacts/session_head.joblib": "ac6176d8f696bbf6c20a7e189f7b8b75c0e5bc349a2709736acfc46f8146a9d3",
+    "offline_v3_source/artifacts/strict_head.joblib": "5c780c8604a5aea5fdfcf8918df58ea74c4b051f0c4667a32e34e66749ab0567",
+    "offline_v3_source/artifacts/fusion_head.joblib": "7fa14739a62cc8eb12a96e9b9fc8a37109d1186b95875c8596b9beeecd62f3e3",
+    "offline_v3_source/artifacts/human_reference_head.joblib": "05af3032be6aae68d7d996cfe5702363132a657f656b35201e3d75890afbf937",
+    "offline_v3_source/artifacts/session_strict_head.joblib": "cc328e4b5c42372da76719469e19f2cc047d6bb341b9cd290d36d5472bfa49f8",
+    "offline_v3_source/artifacts/fake_artifact_calibration.json": "709e012143cf3563d00cf434d65907e947b6fa51d1dd753ff43262107a1869cd",
+    "offline_v3_source/artifacts/feature_schema.json": "c69cc680f98f699fd264d1de930beb6a44bb570cfb84d2649f8f49718d46008b",
+    "offline_v3_source/artifacts/training_config.json": "64ec1dac43b82bd78ac661701ea5bcb9d035aee0d25755769a147c8642c188cd",
+    "offline_v2_dependencies/src/crossscaleguard/parser.py": "45710f16a2c27974e99ad6f04db5d4977eb437a6c67c243990110f8c1dbec88f",
+    "offline_v2_dependencies/src/crossscaleguard/adapter.py": "afe6eadcfb663314e30aebdf52399e8b204317251bf589476cb342f8e6fa4439",
+    "offline_v2_dependencies/src/crossscaleguard/features.py": "6a375a685abfda5260d7af58579d54cda4a87af07f037534d8772e3912d3254c"
+  },
+  "omitted": [
+    "offline_v3_source/artifacts/split_manifest.json",
+    "01_clean_code/offline_defenses/crossscaleguard_offline_v3/run.py"
+  ],
+  "notes": [
+    "Historical source hashes recorded in SOURCE_STATUS.json at the previous Git commit; binary content has not been independently runtime-tested in this release.",
+    "The other frozen_online_v3 scripts are legacy pipelines and should not be treated as equivalent to P10 Frozen Full Fusion."
+  ]
+}

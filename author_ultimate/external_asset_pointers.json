@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "artifact": "P74_RECONSTRUCTED_AUTHOR_ULTIMATE",
+  "project_root": "GUI_AHB_PAPER_REBUILD",
+  "interpretation": "External asset pointers only. No copied upstream source, released model weights, or reconstructed scaler binary are stored in this repository.",
+  "assets": [
+    {
+      "role": "author_original_ultimate_source",
+      "filename": "judge_library.py",
+      "project_relative_path": "00_original/author_repo/analysis/processing/judge_library.py",
+      "sha256_of_local_P74_snapshot": "6433b9261d1b7343a52cc7d51c9e153dabd53fb90fa5a5c75edf331a79895b19",
+      "upstream_source_url": "https://github.com/Gebro13/Passing-the-Turing-Test-on-Screen-Agent-Humanization-Benchmark/blob/main/analysis/processing/judge_library.py",
+      "note": "The local P74 snapshot differs from the separately observed upstream checkout version; use the specific validated local snapshot for exact reproduction. The P31 loader provides the audited compatibility hook."
+    },
+    {
+      "role": "author_swipe_weights",
+      "filename": "humanized_swipe_classifiers.pkl",
+      "project_relative_path": "00_original/author_repo/humanized_swipe_classifiers.pkl",
+      "sha256": "47b9517c8f1122b14a9f7b1f9694f3b8c065cc69909f99115a5e0a63cb5dd3ef",
+      "note": "Five-cluster original fitted Swipe classifiers, not retrained or redistributed."
+    },
+    {
+      "role": "author_tap_weights",
+      "filename": "raw_tap_classifier_us_across_clusters.pkl",
+      "project_relative_path": "00_original/author_repo/raw_tap_classifier_us_across_clusters.pkl",
+      "sha256": "ebf2d307fb9f68606483019e405ab3e31a177f3f8156dae4658e0954220a2b3f",
+      "note": "Original fitted Tap classifier objects. P31 adapts posterior storage."
+    },
+    {
+      "role": "author_interval_weights",
+      "filename": "interval_classifier_microseconds_across_clusters.pkl",
+      "project_relative_path": "00_original/author_repo/interval_classifier_microseconds_across_clusters.pkl",
+      "sha256": "4af23a501f81e0905d56ab8d5b803a2c8242c0364e45e6eee07242c665ec7f3f",
+      "note": "Original fitted interval classifier objects. P31 adapts posterior storage."
+    },
+    {
+      "role": "p73_reconstructed_outer_scaler",
+      "filename": "candidate_outer_scalers_all_clusters.joblib",
+      "project_relative_path": "06_paper_tables/P68_ORIGINAL_CLUSTER_NATIVE_SESSION_TABLE/P73_AUTHOR_NATIVE_RECOVERY/candidate_outer_scalers_all_clusters.joblib",
+      "sha256": "855f33bdac5ce4fe49da528b87fe4e11024c155fcd13bc0092a079a54fbb57cb",
+      "note": "Reconstructed preprocessing for five clusters; verified by P75 against embedded original SVM training scaler statistics, strong numerical equivalence rather than exact byte-level training reconstruction."
+    }
+  ],
+  "supporting_code_paths": [
+    "scripts/P31_hex_online.py",
+    "scripts/P31_hex_frame_adapter.py",
+    "scripts/P74_original_author_reconstructed_scaler_1770.py",
+    "scripts/P75_verify_author_scaler_equivalence.py",
+    "scripts/FINAL_author_1770_audit.py"
+  ],
+  "binary_redistribution": false
+}
