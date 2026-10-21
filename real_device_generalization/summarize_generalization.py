@@ -78,8 +78,12 @@ def session_rows(root):
   yield record
 
 def summarize_one(rows,d):
- people=[r for r in rows if r.get("label")=="human"]
- agents=[r for r in rows if r.get("label")=="agent"]
+ # Only sessions with actual persisted LIVE online scorer output belong to the
+ # anytime denominators. Never silently convert missing evidence to "no alarm".
+ valid=[r for r in rows if r.get("metrics_exists") is True
+        and r.get("physical_g") is not None]
+ people=[r for r in valid if r.get("label")=="human"]
+ agents=[r for r in valid if r.get("label")=="agent"]
  final=[r for r in rows if r.get(d+"_final") is not None]
  paired_agent=[r for r in agents if r.get(d+"_final") is not None]
  paired_human=[r for r in people if r.get(d+"_final") is not None]
@@ -95,6 +99,7 @@ def summarize_one(rows,d):
  def reached(k,group):
   return [r for r in group if (r.get("physical_g") or 0)>=k]
  result={
+  "n_sessions_without_online_metrics":len(rows)-len(valid),
   "n_agent_sessions":len(agents),"n_human_sessions":len(people),
   "n_final_evaluable":len(final),
   "agent_final_evaluable":len(paired_agent),"human_final_evaluable":len(paired_human),
@@ -111,10 +116,10 @@ def summarize_one(rows,d):
   "anytime_human_FPR_all_sessions_pct":pct(online_fp,len(people)),
   "first_alarm_g_mean_among_detected":mean(first),
   "first_alarm_g_median_among_detected":(statistics.median(first) if first else None),
-  "mean_online_prefix_coverage_pct":mean([100*r[d+"_prefix_coverage"] for r in rows
+  "mean_online_prefix_coverage_pct":mean([100*r[d+"_prefix_coverage"] for r in valid
                                            if r.get(d+"_prefix_coverage") is not None]),
-  "mean_inference_latency_ms":mean([r.get(d+"_mean_latency_ms") for r in rows]),
-  "mean_p95_latency_ms":mean([r.get(d+"_p95_latency_ms") for r in rows]),
+  "mean_inference_latency_ms":mean([r.get(d+"_mean_latency_ms") for r in valid]),
+  "mean_p95_latency_ms":mean([r.get(d+"_p95_latency_ms") for r in valid]),
  }
  for k in (5,11):
   ag=reached(k,agents);hu=reached(k,people)
@@ -160,13 +165,19 @@ def self_test():
  a={"agent":"mobile-agent-e","package":"com.tencent.qqmusic","label":"agent",
     "author_final":True,"v3_final":False,"physical_g":8,
     "author_ever_online":True,"v3_ever_online":False,"author_first_alarm_g":3,
-    "author_prefix_coverage":1.0,"v3_prefix_coverage":.5}
+    "author_prefix_coverage":1.0,"v3_prefix_coverage":.5,"metrics_exists":True}
  z=build([a])
  assert z["overall"]["author"]["agent_final_TP"]==1
  assert z["overall"]["v3"]["agent_final_TP"]==0
  assert z["overall"]["author"]["human_final_FPR_pct"] is None
  assert z["overall"]["author"]["balanced_accuracy_pct"] is None
  assert z["overall"]["author"]["g11"]["agent_reached"]==0
+ missing=dict(a)
+ missing["metrics_exists"]=False
+ missing["task_id"]="missing_shadow_metrics"
+ z2=build([a,missing])
+ assert z2["overall"]["author"]["n_agent_sessions"]==1
+ assert z2["overall"]["author"]["n_sessions_without_online_metrics"]==1
  print("GENERALIZATION METRICS SELF-TEST PASS (agent-only FPR correctly undefined)")
 
 def cli(argv=None):
