@@ -1,0 +1,8 @@
+numpy
+pandas
+scipy
+scikit-learn
+joblib
+openpyxl
+xgboost
+# Upstream AHB, project P20/P31, and CrossScaleGuard V3 are separately required.
