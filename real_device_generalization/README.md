@@ -68,11 +68,19 @@ python "$RUNNER" \
 
 If the Mobile-Agent-E location differs, pass its actual path (or omit the flag to use the original adapter's known locations / `MOBILE_AGENT_E_HOME`). The official `MobileAgentE/agents.py`, `MobileAgentE/controller.py` and `inference_agent_E.py` interfaces must match the tested version. If not, preflight fails closed: **never silently fall back to `adb input tap/swipe`.**
 
-## Third: approved single-task phone pilot
+## Single-run **live** dual-defense experiment (not executed yet)
 
-Only after preflight passes, start with a harmless QQ Music navigation task on a dedicated non-sensitive test phone. The native adapter asks for the operator's confirmation. **No purchase, personal data export, account changes, messages or posting.**
+The prior AutoGLM/Mobile-Agent-E/MAI-UI → validated Type-B executor → kernel getevent chain remains unchanged. **Once** each genuine Type-B tap/swipe ends, the original Shadow scores native Frozen P10 V3 (eligible online only from g≥5) and the added [\`live_dual_shadow.py\`](live_dual_shadow.py) evaluates the **same raw touch prefix** with frozen reconstructed P74 Author Ultimate. The Agent does not repeat the task; both detectors are observation-only. The original Agent still makes all GUI decisions and the original native V3 result is returned without modification.
 
-```bash
+**No new experiments are being run as part of this code release.** An eventual Mobile-Agent-E example with a task cluster independently established **before execution**:
+
+\`\`\`bash
+ROOT="$HOME/Desktop/MobileAgentDefense-generalization"
+PROJECT="$HOME/Desktop/GUI_AHB_PAPER_REBUILD"
+RUNNER="$ROOT/real_device_generalization/runner.py"
+
+# C is only a placeholder; never invent a task cluster for a new app.
+# SOURCE_RECORD must document how the AHB ORIGINAL task cluster was verified.
 python "$RUNNER" \
   --agent mobile-agent-e \
   --project "$PROJECT" \
@@ -80,32 +88,54 @@ python "$RUNNER" \
   --expected-package com.tencent.qqmusic \
   --task-id qqmusic_mobile_e_001 \
   --task "在 QQ 音乐搜索一位歌手，查看专辑和歌曲详情后停止。禁止购买、收藏、登录、发送消息或更改设置。" \
+  --task-cluster C \
+  --cluster-evidence "SOURCE_RECORD: verified before experiment" \
   --max-steps 12 \
   --execute
-```
+\`\`\`
 
-**Mobile-Agent-E model/API configuration is controlled by the official environment** (`BACKBONE_TYPE`, its corresponding `OPENAI_API_KEY` / `GEMINI_API_KEY` / `CLAUDE_API_KEY`, and `QWEN_API_KEY` for its captioning provider). Do not supply `--model` for Mobile-Agent-E in this wrapper; that is not part of its original CLI. Never commit credentials, model responses, device screenshots, logs, or raw touch trajectories.
+The command is an **example only**, not a request to run the phone now. If no independently substantiated original AHB cluster exists (especially for a new unseen application), use explicit \`--v3-only\` instead of asserting a misleading P74 comparison. No Human FPR can be inferred from the three GUI-agent traces alone.
 
-The native Mobile-Agent-E adapter writes into `PROJECT/real_device_online/mobile_agent_e_typeb_shadow/<run-id>/`. AutoGLM writes under `autoglm_v3_shadow/`; MAI-UI under `mai_ui_8b_typeb_shadow/`. The orchestrator saves a `generalization_manifest.json` referencing the source adapter SHA256 and declared task metadata.
+Mobile-Agent-E's native \`--max-steps\` limits planner iterations; \`--max-actions\` is **not** a separate Mobile-Agent-E hardware gesture limit. Its official API environment supplies \`BACKBONE_TYPE\`, \`QWEN_API_KEY\` and the selected backbone provider key; never pass an artificial \`--model\` argument to this original Mobile-Agent-E interface.
 
-For Mobile-Agent-E, the official runner uses `--max-steps` to limit planner iterations; it has no independent `--max-actions` flag. Do not claim that `--max-actions` enforces a separate hardware budget for that agent.
+### What each live run records
 
-## Frozen paired replay after a real run (no additional device actions)
+The existing adapter still creates its native directory under \`PROJECT/real_device_online/\`:
+- \`autoglm_v3_shadow/<run-id>/\`
+- \`mobile_agent_e_typeb_shadow/<run-id>/\`
+- \`mai_ui_8b_typeb_shadow/<run-id>/\`
 
-With a previously verified source task cluster `C`, both detectors can replay the **same captured raw Type-B log**. Run `dual_replay.py --preflight-only` first to verify the locally installed original Author source, weights, scaler and P10 run.py hashes; then:
+Each eligible live-dual session now also contains:
 
-```bash
-python "$ROOT/real_device_generalization/dual_replay.py" \
-  --project "$PROJECT" \
-  --log "$PROJECT/real_device_online/mobile_agent_e_typeb_shadow/ACTUAL_RUN/virtual_events_normalized.log" \
-  --task-cluster C \
-  --session-id qqmusic_mobile_e_001 \
-  --out "$PROJECT/real_device_online/mobile_agent_e_typeb_shadow/ACTUAL_RUN/dual_prefix_scores.json"
-```
+| Local file | Purpose |
+| --- | --- |
+| \`virtual_events_normalized.log\` | Independently captured real Type-B virtual touchscreen events |
+| \`v3_prefix_results.jsonl\` | **Untouched** original P10 V3 EAD g≥5 prefix results |
+| \`dual_online_prefixes.jsonl\` | One row per completed physical touch: P74 and V3 eligibility, native scores, decisions, independent parser coverage, processing latency, observation timestamp, and SHA256 of identical physical prefix |
+| \`paired_online_metrics.json\` | First live alarm gesture/UTC, anytime detection, native retrospective session-final decision, P74 final-prefix parity, valid-prefix coverage, detector scoring mean/median/p95 ms, frozen artifact SHA256 and any parser failures |
+| \`generalization_manifest.json\` | Agent, task ID, exact foreground app, source adapter hash, task-cluster provenance, ground truth actor, run status |
+| \`summary.json\` | Original agent's task-completion/self-report and V3 native summary (not rewritten by dual sidecar) |
 
-Replace `ACTUAL_RUN` with the actual directory and `C` only with the verified original cluster. Otherwise, record V3 without fabricating Author eligibility. The optional `runner.py --score-after` performs the same separate no-phone replay after execution but **requires** `--task-cluster`.
+**Online vs final is intentionally separate.** P10 V3's first live alarm uses g≥5 as originally implemented; P74's original cumulative evidence uses recognized finished gestures, with every interval update excluded from the gesture clock. A session with fewer than five gestures can have a retrospective V3 final classification but **cannot** be credited with an earlier g≥5 live alert. Scoring is synchronous after each action and therefore adds measured overhead before the next agent decision; it is not a real-time zero-overhead blocking defense.
 
-P74 local assets remain outside this repository: see [P74 external asset pointers](../author_ultimate/external_asset_pointers.json). Raw observation must come from an actual Type-B capture and must not be synthesized.
+### Optional second read-only parity replay (not required for paired live scoring)
+
+If one wants independent consistency checks after the run, add \`--audit-replay-after\` to the eventual live command. It replays the SAME saved trace offline using [\`dual_replay.py\`](dual_replay.py), saves \`independent_dual_audit_replay.json\`, and performs **no additional phone actions**. This is a verification step; the paired online scores are already saved during the single Agent run.
+
+### Aggregate metrics without inventing Human FPR
+
+After multiple recorded sessions, this script produces total and **Agent × App** tables, including native final accuracy/recall (where identifiable), anytime recall, first-alarm gesture index, g5/g11 rates for all-session and reached-g denominators, coverage, per-detector timing, and manually reported task completion:
+
+\`\`\`bash
+python "$ROOT/real_device_generalization/summarize_generalization.py" \
+  --runs-root "$PROJECT/real_device_online" \
+  --out "$PROJECT/real_device_online/generalization_metrics.json"
+\`\`\`
+
+**Human FPR, balanced accuracy and accuracy remain null (not zero)** until separately collected and correctly labeled Human sessions are included. Report per-detector valid final denominators and paired subset denominators separately. A model self-declared completion is not an independently judged task success. Do not claim an agent-only experimental run measures user burden, override behavior or Human FPR.
+
+Original P74 weights/Scaler are **not redistributed**; [asset pointers](../author_ultimate/external_asset_pointers.json) and frozen hashes are verified before live execution. Predeclared cluster provenance is mandatory for dual trials, and an invalid/unknown task cluster is never silently replaced with another model.
+
 
 ## Publication / verification status
 
