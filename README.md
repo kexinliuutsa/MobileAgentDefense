@@ -1,3 +1,18 @@
+# MobileAgentDefense — two frozen behavioral defense baselines
+
+This release branch contains two distinct research defenses side-by-side:
+
+| Folder | Model | Purpose |
+| --- | --- | --- |
+| [`author_ultimate/`](author_ultimate/) | **AHB Author Ultimate (P74, restored original preprocessing)** | Author's original five task-cluster models, original cumulative scorer, P73/P75 restored outer scaler and Tap/Interval compatibility. Original weights/source/scaler are **external links only**. |
+| [`our_defense/`](our_defense/) | **CrossScaleGuard Frozen V3 (P10 Full Fusion)** | Our frozen trained heads and corresponding extracted algorithm sources. Five `.joblib` model heads and original `training_config.json` are committed. Older V1/V2/V3-OR code is separately labeled as legacy. |
+
+**Publication status:** This is an auditable source-and-artifact release, not an independently validated standalone real-device dual-defense runtime. The two detectors do not share weights or decision thresholds. The Author uses its original task cluster; CrossScaleGuard full fusion does not.
+
+**Git status:** The source restoration is on the publication-review branch; the empty `main` remains unchanged until the draft pull request is reviewed and merged.
+
+---
+
 # Reconstructed AHB Author Ultimate — P74 Online Shadow Evaluation
 
 This repository branch documents our **unofficial research reconstruction** of the original AHB five-cluster `UltimateClassifier.predict()` evaluator and its historical causal completed-touch-prefix replay. It is **not an upstream official release** or a tested plug-and-play Android runtime.
