@@ -27,9 +27,9 @@ This source contains training utilities, but **do not run training to reproduce 
 
 ### What this copy does *not* establish
 
-This folder is a **source and artifact restoration**, not yet a fully self-contained validated deployment package. The historical staging README explicitly warned that local runtime dependencies and the actual originally used runner must be checked. In particular, the canonical Paper Rebuild entry point `01_clean_code/offline_defenses/crossscaleguard_offline_v3/run.py` is **not present in this recovered historical folder**. Do not invent or substitute a new runtime scoring entry point and call it parity-proven.
+The original P10 `run.py` and its matching model and feature-extraction sources **have now been restored with hash checks** in `../01_clean_code/offline_defenses/`. The original `run.py` SHA256 is `c109f1324ed0266f78f43e103b050a5572114735a6dddb1d2f7cf714dc7c373c`, and the historical native 54D and 17D feature sources match their original manifest checksums. A read-only [verification and synthetic-smoke script](verify_frozen_release.py) checks these files. CI runs this check on Python 3.11. A passing CI smoke validates the runnable scorer interface, **not historical score-level parity or real-world accuracy**.
 
-To reconstruct the standalone P10 runtime from the original Mac project, preserve the original sibling-path layout around `crossscaleguard_offline_v2` and `crossscaleguard_offline_v3`, its source `run.py`, and the exact frozen artifact names. Require a model-hash preflight and replay saved real trace inputs to compare scores (not just decisions) before using it in an Android experiment.
+The release now preserves the exact canonical sibling directory layout and artifact filenames used in the original Mac project. Clone the repository, install `requirements-frozen-v3.txt`, run `python our_defense/verify_frozen_release.py --smoke`, then use `python 01_clean_code/offline_defenses/crossscaleguard_offline_v3/run.py --mode predict --log /path/to/virtual_events_normalized.log`. This is shadow scoring; it does not execute or control gestures.
 
 The `split_manifest.json` used in original experiment bookkeeping was **not republished in this branch**, pending review for identifier and data privacy. It is not a model weight.
 
@@ -63,4 +63,4 @@ These values come from previously validated P74 saved row-level predictions, **n
 
 Five weights, the calibration/schema/config JSONs and source files were restored from immutable Git blobs that had previously been uploaded to this repository. We did not load potentially unsafe pickle/joblib binaries or execute inference during this GitHub restoration. Independently validate trusted sources and versions before loading serialized Python objects. No Human touch logs, screenshots, account credentials, or AHB author's model weights are included here.
 
-If you need an independently runnable, end-to-end package, first obtain the original Paper Rebuild `run.py` and validate score-level parity with your frozen real-device shadow runner; that integration is not claimed by this source-only restoration.
+If you need an independently runnable, end-to-end package, use the original P10 `run.py` restored under `01_clean_code/offline_defenses/` and validate score-level parity on a saved real-device trajectory; the synthetic CI test alone is not enough to establish prospective performance.
