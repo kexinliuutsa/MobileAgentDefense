@@ -1,0 +1,36 @@
+name: AutoGLM Mobile-Agent-E MAI-UI offline checks
+on:
+  push:
+    branches:
+      - "experiment/real-device-generalization-v1"
+  pull_request:
+jobs:
+  offline-contract-tests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Compile three adapters and orchestrators without Android
+        run: |
+          python -m py_compile \
+            real_device_generalization/adapters/run_autoglm.py \
+            real_device_generalization/adapters/run_mobile_agent_e.py \
+            real_device_generalization/adapters/run_mai_ui.py \
+            real_device_generalization/runner.py \
+            real_device_generalization/dual_replay.py \
+            real_device_generalization/live_dual_shadow.py \
+            real_device_generalization/summarize_generalization.py
+      - name: Agent CLI contracts
+        run: |
+          python real_device_generalization/runner.py \
+            --agent autoglm --expected-package com.tencent.qqmusic --self-test
+      - name: Paired gesture evidence contract
+        run: python real_device_generalization/dual_replay.py --self-test
+      - name: Live P74 sidecar contract
+        run: python real_device_generalization/live_dual_shadow.py
+      - name: Generalization metrics / Human FPR denominator contract
+        run: python real_device_generalization/summarize_generalization.py --self-test
