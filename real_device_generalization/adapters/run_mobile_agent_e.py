@@ -33,6 +33,18 @@ ORIGINAL_ADAPTER = Path.home()/'Downloads'/'RUN_AUTOGLM_V3_TYPEB_SHADOW_QQMUSIC.
 TYPEB_REMOTE = '/data/local/tmp/uinput_typeb_agent_compat'
 
 
+
+def _attach_live_p74_to_original_v3_shadow(shadow, project, outdir):
+    """Only instrumentation on validated native Shadow; never changes GUI actions."""
+    if os.environ.get("CSG_DUAL_ONLINE") != "1":
+        return shadow
+    shared=Path(__file__).resolve().parents[1]
+    if str(shared) not in sys.path:
+        sys.path.insert(0,str(shared))
+    from live_dual_shadow import wrap
+    return wrap(shadow,project,outdir)
+
+
 def say(*args):
     print(*args, flush=True)
 
@@ -172,9 +184,9 @@ def main():
     outdir.mkdir(parents=True,exist_ok=False)
     # Use ORIGINAL frozen model and ORIGINAL validated watcher's parser.
     v3,params=original.load_v3(project)
-    watcher=original.Shadow(project,adb,TYPEB_REMOTE,
+    watcher=_attach_live_p74_to_original_v3_shadow(original.Shadow(project,adb,TYPEB_REMOTE,
                             outdir/'getevent_all_devices.log',outdir,v3,params,
-                            a.tap_ms,a.swipe_ms)
+                            a.tap_ms,a.swipe_ms),project,outdir)
     logfile=outdir/'agent_actions.jsonl'
     touch_count=[0]
     actions=[]
